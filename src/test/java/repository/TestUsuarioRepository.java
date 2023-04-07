@@ -25,15 +25,26 @@ public class TestUsuarioRepository {
 	public void testa_se_usuario_foi_inserido() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		Usuario user = new Usuario();
 		user.setNome("Usuario do Teste de unidade");
-		System.out.println(user.getNome());
 		this.usuarioRepository.inserir(user);
 
+		Usuario inserido = this.usuarioRepository.consultar(user.getId());
+		
 		assertThat(user.getId() ).isGreaterThan(0);
+		
+		assertThat(inserido).isNotNull();
+		assertThat(inserido.getNome()).isEqualTo(user.getNome());
+		assertThat(inserido.getId()).isEqualTo(user.getId());
+		
 	}
 	@Test
-	public void testa_consultar_usuario() {
-		Usuario user = this.usuarioRepository.consultar(1);
+	public void testa_consultar_usuario() throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
+		
+		int idConsulta = 6;
+		Usuario user = this.usuarioRepository.consultar(idConsulta);
+		
 		assertThat(user).isNotNull();
+		assertThat(user.getNome()).isEqualTo("Usuario do Teste de unidade");
+		assertThat(user.getId()).isEqualTo(idConsulta);
 	}
 
 }

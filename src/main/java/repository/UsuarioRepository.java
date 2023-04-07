@@ -39,8 +39,30 @@ public class UsuarioRepository extends AbstractCrudRepository{
 	public void remover(int id) {
 		
 	}
-	public Usuario consultar(int id) {
-		return null;
+
+	public Usuario consultar(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		// abrir uma conexão com o banco
+		try (Connection c = this.abrirConexao()) {
+
+			Usuario user = null;
+
+			// criar e executar o sql
+			PreparedStatement ps = c.prepareStatement("select id, nome from usuario where id = ?");
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				user = new Usuario();
+				user.setId(rs.getInt("id"));
+				user.setNome(rs.getString("nome"));
+			}
+			rs.close();
+			ps.close();
+
+			return user;
+
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao consultar usuário", e);
+		}
 	}
 	public List<Usuario> listarTodos() {
 		return null;
