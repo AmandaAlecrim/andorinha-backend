@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import model.Usuario;
+import model.exceptions.ErroAoConectarNaBaseException;
+import model.exceptions.ErroAoConsultarBaseException;
 import runner.AndorinhaTestRunner;
 
 @RunWith(AndorinhaTestRunner.class)
@@ -20,9 +22,10 @@ public class TestUsuarioRepository {
 	}
 	
 	@Test
-	public void testa_se_usuario_foi_inserido() {
+	public void testa_se_usuario_foi_inserido() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		Usuario user = new Usuario();
 		user.setNome("Usuario do Teste de unidade");
+		System.out.println(user.getNome());
 		this.usuarioRepository.inserir(user);
 
 		assertThat(user.getId() ).isGreaterThan(0);
