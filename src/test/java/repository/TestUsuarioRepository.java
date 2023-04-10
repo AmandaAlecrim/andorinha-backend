@@ -42,7 +42,7 @@ public class TestUsuarioRepository {
 	@Test
 	public void testa_consultar_usuario() throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
 
-		int idConsulta = 6;
+		int idConsulta = 1;
 		Usuario user = this.usuarioRepository.consultar(idConsulta);
 
 		assertThat(user).isNotNull();
@@ -52,7 +52,7 @@ public class TestUsuarioRepository {
 
 	@Test
 	public void testa_alterar_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		int idConsulta = 5;
+		int idConsulta = 1;
 		Usuario user = this.usuarioRepository.consultar(idConsulta);
 		user.setNome("Nome alterado");
 		this.usuarioRepository.atualizar(user);
@@ -63,7 +63,7 @@ public class TestUsuarioRepository {
 
 	@Test
 	public void testa_remover_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		int idConsulta = 6;
+		int idConsulta = 5;
 		Usuario user = this.usuarioRepository.consultar(idConsulta);
 		assertThat(user).isNotNull();
 
