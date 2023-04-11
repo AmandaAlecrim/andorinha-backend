@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import model.Usuario;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
+import model.selector.UsuarioSeletor;
 
 @Stateless
 public class UsuarioRepository extends AbstractCrudRepository {
@@ -84,6 +85,22 @@ public class UsuarioRepository extends AbstractCrudRepository {
 
 		} catch (SQLException e) {
 			throw new ErroAoConsultarBaseException("Ocorreu um erro ao consultar usuário", e);
+		}
+	}
+
+	public List<Usuario> pesquisar(UsuarioSeletor seletor) throws ErroAoConsultarBaseException {
+		try (Connection c = super.ds.getConnection()) {
+			return null;
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao listar os usuários", e);
+		}
+	}
+
+	public Long contar(UsuarioSeletor seletor) throws ErroAoConsultarBaseException {
+		try (Connection c = super.ds.getConnection()) {
+			return null;
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao listar os usuários", e);
 		}
 	}
 

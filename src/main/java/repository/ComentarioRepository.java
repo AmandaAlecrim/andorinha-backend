@@ -101,20 +101,20 @@ public void inserir(Comentario comentario) throws ErroAoConectarNaBaseException,
 		}	
 	}
 	
-	public List<Comentario> pesquisar(ComentarioSeletor seletor){
-		
-		//listar os comentarios filtrando pelos campos do seletor
-		
-		return null;
-		
+	public List<Comentario> pesquisar(ComentarioSeletor seletor) throws ErroAoConsultarBaseException{
+		try (Connection c = super.ds.getConnection()) {
+			return null;
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao listar os usuários", e);
+		}
 	}
 	
-	public Long contar(ComentarioSeletor seletor){
-		
-		//listar os comentarios filtrando pelos campos do seletor
-		
-		return null;
-		
+	public Long contar(ComentarioSeletor seletor) throws ErroAoConsultarBaseException{
+		try (Connection c = super.ds.getConnection()) {
+			return null;
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao listar os usuários", e);
+		}		
 	}
 	
 	public List<Comentario> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {

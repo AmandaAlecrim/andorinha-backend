@@ -1,7 +1,6 @@
 package repository;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,17 +16,9 @@ public abstract class AbstractCrudRepository {
 	@Resource(name = "andorinhaDS")
 	protected DataSource ds;
 	
-	protected Connection abrirConexao() throws ErroAoConectarNaBaseException {
-		try {
-			return ds.getConnection();
-		} catch (SQLException e) {
-			throw new ErroAoConectarNaBaseException("Ocorreu um erro ao acesar a base de dados", e);
-		}
-	}
-	
 	protected int recuperarProximoValorDaSequence (String nomeSequence) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		//abrir uma conexão com o banco
-		try ( Connection c = this.abrirConexao() ){
+		try ( Connection c = this.ds.getConnection() ){
 
 			//recuperar próximo valor do id
 			PreparedStatement ps = c.prepareStatement("select nextval(?)");
