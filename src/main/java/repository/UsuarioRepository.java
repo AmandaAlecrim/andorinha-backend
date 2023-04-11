@@ -7,16 +7,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.Stateless;
+
 import model.Usuario;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
 
+@Stateless
 public class UsuarioRepository extends AbstractCrudRepository {
 
 	public void inserir(Usuario usuario) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 
 		// abrir uma conexão com o banco
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 
 			// próximo valor da sequence
 			int id = this.recuperarProximoValorDaSequence("seq_usuario");
@@ -35,7 +38,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 	}
 
 	public void atualizar(Usuario usuario) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 			PreparedStatement ps = c.prepareStatement("update usuario set nome = ? where id = ?");
 			ps.setString(1, usuario.getNome());
 			ps.setInt(2, usuario.getId());
@@ -47,7 +50,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 	}
 
 	public void remover(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 
 			PreparedStatement ps = c.prepareStatement("delete from usuario where id = ?");
 			ps.setInt(1, id);
@@ -61,7 +64,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 
 	public Usuario consultar(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		// abrir uma conexão com o banco
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 
 			Usuario user = null;
 
@@ -85,7 +88,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 	}
 
 	public List<Usuario> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 
 			List<Usuario> users = new ArrayList<>();
 

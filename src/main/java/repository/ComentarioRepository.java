@@ -8,6 +8,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+
+import javax.ejb.Stateless;
+
 import java.util.ArrayList;
 
 import model.Comentario;
@@ -15,10 +18,12 @@ import model.Usuario;
 import model.Tweet;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
+
+@Stateless
 public class ComentarioRepository extends AbstractCrudRepository{
 	
 public void inserir(Comentario comentario) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-	try (Connection c = this.abrirConexao()) {
+	try (Connection c = super.ds.getConnection()) {
 
 		int id = this.recuperarProximoValorDaSequence("seq_comentario");
 		comentario.setId(id);
@@ -40,7 +45,7 @@ public void inserir(Comentario comentario) throws ErroAoConectarNaBaseException,
 	}
 	
 	public Comentario consultar(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 			
 			Comentario comentario = null;
 			
@@ -96,7 +101,7 @@ public void inserir(Comentario comentario) throws ErroAoConectarNaBaseException,
 	}
 	
 	public List<Comentario> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 			
 			List<Comentario> comentarios = new ArrayList<>();
 			
@@ -152,7 +157,7 @@ public void inserir(Comentario comentario) throws ErroAoConectarNaBaseException,
 	}
 	
 	public void atualizar (Comentario comentario) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 			
 			Calendar hoje = Calendar.getInstance();
 			
@@ -169,7 +174,7 @@ public void inserir(Comentario comentario) throws ErroAoConectarNaBaseException,
 	}
 	
 	public void remover (int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 			
 			PreparedStatement ps = c.prepareStatement("delete from comentario where id = ?");
 			ps.setInt(1, id);

@@ -7,6 +7,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.ejb.Stateless;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -15,10 +18,11 @@ import model.Usuario;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
 
+@Stateless
 public class TweetRepository extends AbstractCrudRepository {
 
 	public void inserir(Tweet tweet) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 
 			int id = this.recuperarProximoValorDaSequence("seq_tweet");
 			tweet.setId(id);
@@ -40,7 +44,7 @@ public class TweetRepository extends AbstractCrudRepository {
 	}
 
 	public Tweet consultar(int id) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 
 			Tweet tweet = null;
 
@@ -78,7 +82,7 @@ public class TweetRepository extends AbstractCrudRepository {
 	}
 
 	public List<Tweet> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 			
 			List<Tweet> tweets = new ArrayList<>();			
 			StringBuilder sql = new StringBuilder();
@@ -116,7 +120,7 @@ public class TweetRepository extends AbstractCrudRepository {
 	}
 
 	public void atualizar(Tweet tweet) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 			
 			Calendar hoje = Calendar.getInstance();
 			
@@ -133,7 +137,7 @@ public class TweetRepository extends AbstractCrudRepository {
 	}
 
 	public void remover(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
+		try (Connection c = super.ds.getConnection()) {
 			
 			PreparedStatement ps = c.prepareStatement("delete from tweet where id = ?");
 			ps.setInt(1, id);
