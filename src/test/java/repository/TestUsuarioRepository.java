@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import model.Usuario;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
+import model.selector.UsuarioSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
 
@@ -95,6 +96,33 @@ public class TestUsuarioRepository {
 		List<Usuario> usuarios = this.usuarioRepository.listarTodos();
 
 		assertThat(usuarios).isNotNull().isNotEmpty();
+	}
+	
+	@Test
+	public void testa_pesquisar_usuarios_por_nome() throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
+		UsuarioSeletor seletor = new UsuarioSeletor();
+		seletor.setNome("Us");
+		List<Usuario> usuarios = this.usuarioRepository.pesquisar(seletor);
+		
+		assertThat(usuarios).isNotNull().isNotEmpty();
+	}
+	
+	@Test
+	public void testa_contar_usuarios_por_nome() throws ErroAoConsultarBaseException {
+		UsuarioSeletor seletor = new UsuarioSeletor();
+		seletor.setNome("Usuário");
+		Long total = this.usuarioRepository.contar(seletor);
+		
+		assertThat(total).isNotNull().isEqualTo(5L);
+	}
+	@Test
+	public void testa_pesquisar_usuarios_por_id() throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
+		UsuarioSeletor seletor = new UsuarioSeletor();
+		seletor.setId(2);
+		
+		List<Usuario> usuarios = this.usuarioRepository.pesquisar(seletor);
+		
+		assertThat(usuarios).isNotNull().isNotEmpty().hasSize(1);
 	}
 
 }

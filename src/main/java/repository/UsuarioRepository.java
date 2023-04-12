@@ -88,43 +88,103 @@ public class UsuarioRepository extends AbstractCrudRepository {
 		}
 	}
 
-	public List<Usuario> pesquisar(UsuarioSeletor seletor) throws ErroAoConsultarBaseException {
+	public void criarFiltro(StringBuilder sql, UsuarioSeletor seletor) {
+		if (seletor.possuiFiltro()) {
+			sql.append("where ");
+			boolean primeiro = false;
+
+			if (seletor.getId() != null) {
+				sql.append("id = ? ");
+				primeiro = true;
+			}
+			if (seletor.getNome() != null && !seletor.getNome().trim().isEmpty()) {
+				if (primeiro) {
+					sql.append("and ");
+				}
+				sql.append("nome like ?");
+
+			}
+		}
+	}
+
+	public void adicionarParametro(PreparedStatement ps, UsuarioSeletor seletor) throws SQLException {
+		int i = 1;
+
+		if (seletor.possuiFiltro()) {
+			if (seletor.getId() != null) {
+				ps.setInt(i++, seletor.getId());
+			}
+			if (seletor.getNome() != null && !seletor.getNome().trim().isEmpty()) {
+				ps.setString(i++, String.format("%%%s%%", seletor.getNome()));
+			}
+		}
+	}
+
+	public List<Usuario> pesquisar(UsuarioSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
 		try (Connection c = super.ds.getConnection()) {
-			return null;
+
+			List<Usuario> users = new ArrayList<>();
+
+			StringBuilder sql = new StringBuilder();
+			sql.append("select id, nome from usuario ");
+			
+			this.criarFiltro(sql, seletor);
+			
+			PreparedStatement ps = c.prepareStatement( sql.toString() );
+			
+			this.adicionarParametro(ps, seletor);
+			
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				users.add( this.criarModel(rs) );
+			}
+			rs.close();
+			ps.close();
+
+			return users;
+
 		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao listar os usuários", e);
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao listar todos os usuários", e);
 		}
 	}
 
 	public Long contar(UsuarioSeletor seletor) throws ErroAoConsultarBaseException {
 		try (Connection c = super.ds.getConnection()) {
-			return null;
+
+			Long id = 0L;
+
+			StringBuilder sql = new StringBuilder();
+
+			sql.append("select count(id) as total from usuario ");
+			
+			this.criarFiltro(sql, seletor);
+
+			PreparedStatement ps = c.prepareStatement(sql.toString());
+
+			this.adicionarParametro(ps, seletor);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				id = rs.getLong("total");
+			}
+			rs.close();
+			ps.close();
+
+			return id;
 		} catch (SQLException e) {
 			throw new ErroAoConsultarBaseException("Ocorreu um erro ao listar os usuários", e);
 		}
 	}
 
 	public List<Usuario> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = super.ds.getConnection()) {
-
-			List<Usuario> users = new ArrayList<>();
-
-			PreparedStatement ps = c.prepareStatement("select * from usuario");
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-				Usuario user = new Usuario();
-				user.setId(rs.getInt("id"));
-				user.setNome(rs.getString("nome"));
-
-				users.add(user);
-			}
-			rs.close();
-			ps.close();
-
-			return users;
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao listar todos os usuários", e);
-		}
+		return this.pesquisar(new UsuarioSeletor());
+	}
+	
+	private Usuario criarModel(ResultSet rs) throws SQLException {
+		Usuario user = new Usuario();
+		user.setId(rs.getInt("id"));
+		user.setNome(rs.getString("nome"));
+		return user;
 	}
 }
