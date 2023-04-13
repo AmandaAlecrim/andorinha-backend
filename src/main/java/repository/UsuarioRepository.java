@@ -126,7 +126,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 			List<Usuario> users = new ArrayList<>();
 
 			StringBuilder sql = new StringBuilder();
-			sql.append("select id, nome from usuario ");
+			sql.append("select * from usuario ");
 			
 			this.criarFiltro(sql, seletor);
 			
