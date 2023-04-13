@@ -99,21 +99,16 @@ public class TestComentarioRepository {
 	}
 	
 	@Test
-	public void test_pesquisar_comentarios_filtrado_por_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_pesquisar_comentarios_filtrado_por_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		
 		ComentarioSeletor seletor = new ComentarioSeletor();
-		/*
-		seletor.setIdTweet(2);
-		seletor.setIdUsuario(1);
-		seletor.setComentario("teste");
-		*/
+		seletor.setIdTweet( 2 );
+		//seletor.setIdUsuario( 1 );
 		
-		List<Comentario> comentarios = this.comentarioRepository.listarTodos();
-
-		assertThat(comentarios).isNotNull().isNotEmpty().hasSize(10).extracting("conteudo").containsExactlyInAnyOrder(
-				"Comentário 1", "Comentário 2", "Comentário 3", "Comentário 4", "Comentário 5", "Comentário 6",
-				"Comentário 7", "Comentário 8", "Comentário 9", "Comentário 10");
-
+		List<Comentario> comentarios = this.comentarioRepository.pesquisar( seletor );
+		
+		assertThat( comentarios ).isNotNull().isNotEmpty();
+		
 		comentarios.stream().forEach(t -> {
 			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
 			assertThat(t.getUsuario()).isNotNull();
