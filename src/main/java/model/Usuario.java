@@ -27,8 +27,8 @@ public class Usuario {
 
 	// OneToMany pode ser utilizado mas não é necessário e nem recomendado devido a
 	// grande quantidade de itens que são mostrados nas queries do JPA
-	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
-	List<Tweet> tweets;
+	// @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
+	// List<Tweet> tweets;
 
 	@Override
 	public String toString() {
@@ -51,12 +51,12 @@ public class Usuario {
 		this.nome = nome;
 	}
 
-	public List<Tweet> getTweets() {
-		return tweets;
-	}
+	// public List<Tweet> getTweets() {
+	// 	return tweets;
+	// }
 
-	public void setTweets(List<Tweet> tweets) {
-		this.tweets = tweets;
-	}
+	// public void setTweets(List<Tweet> tweets) {
+	// 	this.tweets = tweets;
+	// }
 
 }
