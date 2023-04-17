@@ -6,33 +6,31 @@ import javax.ejb.Stateless;
 import javax.persistence.Query;
 
 import model.Usuario;
-import model.exceptions.ErroAoConectarNaBaseException;
-import model.exceptions.ErroAoConsultarBaseException;
 import model.selector.UsuarioSeletor;
 
 @Stateless
 public class UsuarioRepository extends AbstractCrudRepository {
 
-	public void inserir(Usuario usuario) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void inserir(Usuario usuario) {
 		super.em.persist(usuario);
 	}
 
-	public void atualizar(Usuario usuario) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void atualizar(Usuario usuario) {
 		super.em.merge(usuario);
 	}
 
-	public void remover(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void remover(int id) {
 		Usuario user = this.consultar(id);
 		super.em.remove(user);
 	}
 
-	public Usuario consultar(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public Usuario consultar(int id) {
 		return super.em.find(Usuario.class, id);
 	}
 
 	public void criarFiltro(StringBuilder jpql, UsuarioSeletor seletor) {
 		if (seletor.possuiFiltro()) {
-			jpql.append("where ");
+			jpql.append("WHERE ");
 			boolean primeiro = false;
 
 			if (seletor.getId() != null) {
@@ -43,55 +41,51 @@ public class UsuarioRepository extends AbstractCrudRepository {
 				if (primeiro) {
 					jpql.append("and ");
 				}
-				jpql.append("u.nome like :nome");
+				jpql.append("u.nome LIKE :nome ");
 
 			}
 		}
 	}
 
 	public void adicionarParametro(Query query, UsuarioSeletor seletor) {
-		
+
 		if (seletor.possuiFiltro()) {
 			if (seletor.getId() != null) {
 				query.setParameter("id", seletor.getId());
 			}
 			if (seletor.getNome() != null && !seletor.getNome().trim().isEmpty()) {
-				query.setParameter("nome", seletor.getNome());
+				query.setParameter("nome", String.format("%%%s%%", seletor.getNome()));
 			}
 		}
 	}
 
-	public List<Usuario> pesquisar(UsuarioSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
-		StringBuilder jpql = new StringBuilder();		
-		jpql.append("SELECT u FROM Usuario u");
-		
+	public List<Usuario> pesquisar(UsuarioSeletor seletor) {
+		StringBuilder jpql = new StringBuilder();
+		jpql.append("SELECT u FROM Usuario u ");
+
 		this.criarFiltro(jpql, seletor);
-		
+
 		Query query = super.em.createQuery(jpql.toString());
-		
+
 		this.adicionarParametro(query, seletor);
-		
+
 		return query.getResultList();
 	}
 
-	public Long contar(UsuarioSeletor seletor) throws ErroAoConsultarBaseException {
-		StringBuilder jpql = new StringBuilder();		
-		jpql.append("SELECT COUNT(u) FROM Usuario u");
-		
+	public Long contar(UsuarioSeletor seletor) {
+		StringBuilder jpql = new StringBuilder();
+		jpql.append("SELECT COUNT(u) FROM Usuario u ");
+
 		this.criarFiltro(jpql, seletor);
-		
+
 		Query query = super.em.createQuery(jpql.toString());
-		
+
 		this.adicionarParametro(query, seletor);
-		
+
 		return (Long) query.getSingleResult();
 	}
 
-	public List<Usuario> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		
-		StringBuilder jpql = new StringBuilder();		
-		jpql.append("SELECT u FROM Usuario u");
-		
-		return super.em.createQuery(jpql.toString()).getResultList();
+	public List<Usuario> listarTodos() {
+		return this.pesquisar(new UsuarioSeletor());
 	}
 }

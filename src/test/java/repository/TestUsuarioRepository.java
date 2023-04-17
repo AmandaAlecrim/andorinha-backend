@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.transaction.RollbackException;
 
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
@@ -35,7 +36,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_se_usuario_foi_inserido() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_se_usuario_foi_inserido(){
 		Usuario user = new Usuario();
 		user.setNome("Usuario do Teste de unidade");
 		this.usuarioRepository.inserir(user);
@@ -61,7 +62,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_alterar_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_alterar_usuario(){
 
 		Usuario user = this.usuarioRepository.consultar(idUsuarioConsulta);
 		user.setNome("Nome alterado");
@@ -72,7 +73,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_remover_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_remover_usuario(){
 
 		Usuario user = this.usuarioRepository.consultar(idUsuarioSemTweet);
 		assertThat(user).isNotNull();
@@ -87,42 +88,52 @@ public class TestUsuarioRepository {
 	public void testa_remover_usuario_com_tweet() {
 		assertThatThrownBy(() -> {
 			this.usuarioRepository.remover(idUsuarioConsulta);
-		}).isInstanceOf(ErroAoConsultarBaseException.class)
-				.hasMessageContaining("Ocorreu um erro ao remover o usuário");
+		}).hasCauseInstanceOf(RollbackException.class);
 	}
 
 	@Test
-	public void testa_listar_todos_usuarios() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_listar_todos_usuarios(){
 		List<Usuario> usuarios = this.usuarioRepository.listarTodos();
 
 		assertThat(usuarios).isNotNull().isNotEmpty();
 	}
-	
+
 	@Test
 	public void testa_pesquisar_usuarios_por_nome() throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
 		UsuarioSeletor seletor = new UsuarioSeletor();
 		seletor.setNome("Us");
 		List<Usuario> usuarios = this.usuarioRepository.pesquisar(seletor);
-		
+
 		assertThat(usuarios).isNotNull().isNotEmpty();
 	}
-	
+
 	@Test
 	public void testa_contar_usuarios_por_nome() throws ErroAoConsultarBaseException {
 		UsuarioSeletor seletor = new UsuarioSeletor();
 		seletor.setNome("Usuário");
 		Long total = this.usuarioRepository.contar(seletor);
-		
+
 		assertThat(total).isNotNull().isEqualTo(5L);
 	}
+
 	@Test
 	public void testa_pesquisar_usuarios_por_id() throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
 		UsuarioSeletor seletor = new UsuarioSeletor();
 		seletor.setId(2);
-		
+
 		List<Usuario> usuarios = this.usuarioRepository.pesquisar(seletor);
-		
+
 		assertThat(usuarios).isNotNull().isNotEmpty().hasSize(1);
+	}
+	@Test
+	public void testa_consultar_usuario_trazerndo_tweets() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Usuario user = this.usuarioRepository.consultar(idUsuarioConsulta);
+		
+		assertThat( user ).isNotNull();
+		assertThat( user.getNome() ).isEqualTo("Usuário 1");
+		assertThat( user.getId() ).isEqualTo(idUsuarioConsulta);
+		
+		assertThat( user.getTweets() ).isNotNull().isNotEmpty();
 	}
 
 }

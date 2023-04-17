@@ -2,7 +2,6 @@ package repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.ArrayList;
@@ -22,63 +21,12 @@ import model.exceptions.ErroAoConsultarBaseException;
 public class TweetRepository extends AbstractCrudRepository {
 
 	public void inserir(Tweet tweet) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = super.ds.getConnection()) {
-
-			int id = this.recuperarProximoValorDaSequence("seq_tweet");
-			tweet.setId(id);
-
-			Calendar hoje = Calendar.getInstance();
-
-			PreparedStatement ps = c.prepareStatement(
-					"insert into tweet (id, conteudo, data_postagem, id_usuario) values (?, ?, ?, ?)");
-			ps.setInt(1, tweet.getId());
-			ps.setString(2, tweet.getTexto());
-			ps.setTimestamp(3, new Timestamp(hoje.getTimeInMillis()));
-			ps.setInt(4, tweet.getUsuario().getId());
-			ps.execute();
-			ps.close();
-
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao inserir o tweet", e);
-		}
+		tweet.setData(Calendar.getInstance());
+		super.em.persist(tweet);
 	}
 
 	public Tweet consultar(int id) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
-		try (Connection c = super.ds.getConnection()) {
-
-			Tweet tweet = null;
-
-			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT t.id, t.conteudo, t.data_postagem, t.id_usuario, u.nome as nome_usuario FROM tweet t ");
-			sql.append("JOIN usuario u on t.id_usuario = u.id ");
-			sql.append("WHERE t.id = ? ");
-
-			PreparedStatement ps = c.prepareStatement(sql.toString());
-			ps.setInt(1, id);
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.next()) {
-				tweet = new Tweet();
-				tweet.setId(rs.getInt("id"));
-				tweet.setTexto(rs.getString("conteudo"));
-
-				Calendar data = new GregorianCalendar();
-				data.setTime( rs.getTimestamp("data_postagem") );
-				tweet.setData(data);
-
-				Usuario user = new Usuario();
-				user.setId(rs.getInt("id_usuario"));
-				user.setNome(rs.getString("nome_usuario"));
-				tweet.setUsuario(user);
-			}
-			rs.close();
-			ps.close();
-
-			return tweet;
-
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao consultar o tweet", e);
-		}
+		return super.em.find(Tweet.class, id);
 	}
 
 	public List<Tweet> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
@@ -120,32 +68,11 @@ public class TweetRepository extends AbstractCrudRepository {
 	}
 
 	public void atualizar(Tweet tweet) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = super.ds.getConnection()) {
-			
-			Calendar hoje = Calendar.getInstance();
-			
-			PreparedStatement ps = c.prepareStatement("update tweet set conteudo = ?, data_postagem = ? where id = ?");
-			ps.setString(1, tweet.getTexto());
-			ps.setTimestamp(2, new Timestamp(hoje.getTimeInMillis()));
-			ps.setInt(3, tweet.getId());
-			ps.execute();
-			ps.close();
-			
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao atualizar o tweet", e);
-		}
+		super.em.merge(tweet);
 	}
 
 	public void remover(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = super.ds.getConnection()) {
-			
-			PreparedStatement ps = c.prepareStatement("delete from tweet where id = ?");
-			ps.setInt(1, id);
-			ps.execute();
-			ps.close();
-			
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao remover o tweet", e);
-		}
+		Tweet tweet = this.consultar(id);
+		super.em.remove(tweet);
 	}
 }
