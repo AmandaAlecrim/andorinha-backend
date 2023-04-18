@@ -4,8 +4,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.ejb.Stateless;
-import javax.persistence.Query;
-
 import model.Tweet;
 
 @Stateless
@@ -21,22 +19,11 @@ public class TweetRepository extends AbstractCrudRepository {
 	}
 
 	public List<Tweet> listarTodos() {
-
-		StringBuilder jpql = new StringBuilder();
-
-		jpql.append("SELECT t FROM Tweet t ");
-		jpql.append("INNER JOIN FETCH t.usuario ");
-
-		// jpql.append("select t.id, t.conteudo, t.data_postagem, t.id_usuario, u.nome
-		// as nome_usuario from tweet t ");
-		// jpql.append("join usuario u on t.id_usuario = u.id ");
-
-		Query query = super.em.createQuery(jpql.toString());
-
-		return query.getResultList();
+		return this.em.createQuery("SELECT t from Tweet t").getResultList();
 	}
 
 	public void atualizar(Tweet tweet) {
+		tweet.setData(Calendar.getInstance());
 		super.em.merge(tweet);
 	}
 
