@@ -1,26 +1,13 @@
 package repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 
-import java.util.ArrayList;
-
 import model.Comentario;
-import model.Usuario;
-import model.Tweet;
-import model.exceptions.ErroAoConectarNaBaseException;
-import model.exceptions.ErroAoConsultarBaseException;
 import model.selector.ComentarioSeletor;
-import model.selector.UsuarioSeletor;
 
 @Stateless
 public class ComentarioRepository extends AbstractCrudRepository {
@@ -33,38 +20,38 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		return super.em.find(Comentario.class, id);
 	}
 
-	public void criarFiltro(StringBuilder sql, ComentarioSeletor seletor) {
+	public void criarFiltro(StringBuilder jpql, ComentarioSeletor seletor) {
 		if (seletor.possuiFiltro()) {
-			sql.append("where ");
+			jpql.append("where ");
 			boolean primeiro = false;
 
 			if (seletor.getId() != null) {
-				sql.append("id = :id ");
+				jpql.append("id = :id ");
 				primeiro = true;
 			}
 			if (seletor.getIdUsuario() != null) {
 				if (primeiro) {
-					sql.append("and ");
+					jpql.append("and ");
 				}
-				sql.append("c.id_usuario = :id_usuario ");
+				jpql.append("c.id_usuario = :id_usuario ");
 			}
 			if (seletor.getIdTweet() != null) {
 				if (primeiro) {
-					sql.append("and ");
+					jpql.append("and ");
 				}
-				sql.append("id_tweet = :id_tweet ");
+				jpql.append("id_tweet = :id_tweet ");
 			}
 			if (seletor.getComentario() != null && !seletor.getComentario().trim().isEmpty()) {
 				if (primeiro) {
-					sql.append("and ");
+					jpql.append("and ");
 				}
-				sql.append("conteudo like :conteudo");
+				jpql.append("conteudo like :conteudo");
 			}
 			if (seletor.getData() != null) {
 				if (primeiro) {
-					sql.append("and ");
+					jpql.append("and ");
 				}
-				sql.append("data_postagem = :data_postagem ");
+				jpql.append("data_postagem = :data_postagem ");
 			}
 		}
 	}
@@ -107,7 +94,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		return query.getResultList();
 	}
 
-	public Long contar(ComentarioSeletor seletor) throws ErroAoConsultarBaseException {
+	public Long contar(ComentarioSeletor seletor) {
 
 		StringBuilder jpql = new StringBuilder();
 		jpql.append("SELECT COUNT(c) FROM Comentario c ");
@@ -121,15 +108,15 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		return (Long) query.getSingleResult();
 	}
 
-	public List<Comentario> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public List<Comentario> listarTodos() {
 		return this.pesquisar(new ComentarioSeletor());
 	}
 
-	public void atualizar(Comentario comentario) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void atualizar(Comentario comentario) {
 		super.em.merge(comentario);
 	}
 
-	public void remover(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void remover(int id) {
 		Comentario comentario = this.consultar(id);
 		super.em.remove(comentario);
 	}
