@@ -92,17 +92,11 @@ public class ComentarioRepository extends AbstractCrudRepository {
 
 	public List<Comentario> pesquisar(ComentarioSeletor seletor) {
 		StringBuilder jpql = new StringBuilder();
-		/*
-		 * jpql.append("SELECT c.id, c.conteudo, c.data_postagem, c.id_usuario, c.id_tweet, ");
-		 * jpql.append("u.nome as nome_usuario, t.conteudo as conteudo_tweet, t.data_postagem as data_postagem_tweet, ");
-		 * jpql.append("t.id_usuario as id_usuario_tweet, ut.nome as nome_usuario_tweet ");
-		 * jpql.append("FROM comentario c ");
-		 * jpql.append("JOIN tweet t on c.id_tweet = t.id ");
-		 * jpql.append("JOIN usuario u on c.id_usuario = u.id ");
-		 * jpql.append("JOIN usuario ut on t.id_usuario = ut.id ");
-		 */
 		
 		jpql.append("SELECT c FROM Comentario c ");
+		jpql.append("INNER JOIN FETCH c.tweet t ");
+		jpql.append("INNER JOIN FETCH c.usuario ");
+		jpql.append("INNER JOIN FETCH t.usuario ");
 
 		this.criarFiltro(jpql, seletor);
 
