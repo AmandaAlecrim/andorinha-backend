@@ -139,6 +139,8 @@ public class ComentarioRepository extends AbstractCrudRepository {
 
 	public void remover(int id) {
 		Comentario comentario = this.consultar(id);
-		super.em.remove(comentario);
+		if(comentario != null) {
+			super.em.remove(comentario);
+		}
 	}
 }
