@@ -1,14 +1,10 @@
 package model;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -24,6 +20,12 @@ public class Usuario {
 
 	@Column(name = "nome")
 	private String nome;
+	
+	@Column(name = "login")
+	private String login;
+
+	@Column(name = "senha")
+	private String senha;
 
 	// OneToMany pode ser utilizado mas não é necessário e nem recomendado devido a
 	// grande quantidade de itens que são mostrados nas queries do JPA
@@ -49,8 +51,24 @@ public class Usuario {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}	
+	
+	public String getLogin() {
+		return login;
 	}
 
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+	
 	// public List<Tweet> getTweets() {
 	// 	return tweets;
 	// }
