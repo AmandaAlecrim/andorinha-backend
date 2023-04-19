@@ -1,6 +1,7 @@
 package repository;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -15,6 +16,7 @@ import model.selector.ComentarioSeletor;
 public class ComentarioRepository extends AbstractCrudRepository {
 
 	public void inserir(Comentario comentario) {
+		comentario.setData(Calendar.getInstance());
 		super.em.persist(comentario);
 	}
 
@@ -131,6 +133,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 	}
 
 	public void atualizar(Comentario comentario) {
+		comentario.setData(Calendar.getInstance());
 		super.em.merge(comentario);
 	}
 
