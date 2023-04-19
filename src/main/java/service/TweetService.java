@@ -14,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import model.Tweet;
+import model.selector.TweetSeletor;
 import repository.TweetRepository;
 
 @Path("/tweet")
@@ -54,5 +55,13 @@ public class TweetService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public void remover(@PathParam("id") Integer id) {
 		this.tweetRepository.remover(id);
+	}
+	
+	@POST
+	@Path("/pesquisar")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Tweet> pesquisar(TweetSeletor seletor) {
+		return this.tweetRepository.pesquisar(seletor);
 	}
 }

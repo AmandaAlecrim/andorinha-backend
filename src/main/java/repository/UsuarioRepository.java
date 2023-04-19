@@ -7,26 +7,10 @@ import javax.persistence.Query;
 
 import model.Usuario;
 import model.selector.UsuarioSeletor;
+import repository.base.AbstractCrudRepository;
 
 @Stateless
-public class UsuarioRepository extends AbstractCrudRepository {
-
-	public void inserir(Usuario usuario) {
-		super.em.persist(usuario);
-	}
-
-	public void atualizar(Usuario usuario) {
-		super.em.merge(usuario);
-	}
-
-	public void remover(int id) {
-		Usuario user = this.consultar(id);
-		super.em.remove(user);
-	}
-
-	public Usuario consultar(int id) {
-		return super.em.find(Usuario.class, id);
-	}
+public class UsuarioRepository extends AbstractCrudRepository<Usuario> {
 
 	public void criarFiltro(StringBuilder jpql, UsuarioSeletor seletor) {
 		if (seletor.possuiFiltro()) {
@@ -83,9 +67,5 @@ public class UsuarioRepository extends AbstractCrudRepository {
 		this.adicionarParametro(query, seletor);
 
 		return (Long) query.getSingleResult();
-	}
-
-	public List<Usuario> listarTodos() {
-		return this.pesquisar(new UsuarioSeletor());
 	}
 }

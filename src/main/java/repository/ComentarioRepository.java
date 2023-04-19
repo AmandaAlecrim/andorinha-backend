@@ -11,14 +11,10 @@ import javax.persistence.TypedQuery;
 import model.Comentario;
 import model.dto.ComentarioDTO;
 import model.selector.ComentarioSeletor;
+import repository.base.AbstractCrudRepository;
 
 @Stateless
-public class ComentarioRepository extends AbstractCrudRepository {
-
-	public void inserir(Comentario comentario) {
-		comentario.setData(Calendar.getInstance());
-		super.em.persist(comentario);
-	}
+public class ComentarioRepository extends AbstractCrudRepository<Comentario> {
 
 	public Comentario consultar(int id) {
 		return super.em.find(Comentario.class, id);
@@ -99,6 +95,12 @@ public class ComentarioRepository extends AbstractCrudRepository {
 	}
 	
 	public List<ComentarioDTO> pesquisarDTO(ComentarioSeletor seletor) {
+
+		return super.createTupleQuery().select("id", "tweet.id as idTweet", "usuario.id as idUsuario", "usuario.nome as nomeUsuario", "data", "conteudo")
+				.join("usuario").join("tweet").equal("id", seletor.getId()).list(ComentarioDTO.class);
+	}
+	
+	public List<ComentarioDTO> pesquisarDTOold(ComentarioSeletor seletor) {
 		StringBuilder jpql = new StringBuilder("SELECT new model.dto.ComentarioDTO( c.id, t.id, u.id, u.nome, c.data, c.conteudo ) ");
 		
 		jpql.append("FROM Comentario c ");
@@ -126,21 +128,5 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		this.adicionarParametro(query, seletor);
 
 		return (Long) query.getSingleResult();
-	}
-
-	public List<Comentario> listarTodos() {
-		return this.pesquisar(new ComentarioSeletor());
-	}
-
-	public void atualizar(Comentario comentario) {
-		comentario.setData(Calendar.getInstance());
-		super.em.merge(comentario);
-	}
-
-	public void remover(int id) {
-		Comentario comentario = this.consultar(id);
-		if(comentario != null) {
-			super.em.remove(comentario);
-		}
 	}
 }

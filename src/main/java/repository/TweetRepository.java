@@ -1,34 +1,28 @@
 package repository;
 
-import java.util.Calendar;
 import java.util.List;
 
 import javax.ejb.Stateless;
 import model.Tweet;
+import model.selector.TweetSeletor;
+import repository.base.AbstractCrudRepository;
 
 @Stateless
-public class TweetRepository extends AbstractCrudRepository {
+public class TweetRepository extends AbstractCrudRepository<Tweet> {
 
-	public void inserir(Tweet tweet) {
-		tweet.setData(Calendar.getInstance());
-		super.em.persist(tweet);
+	public List<Tweet> pesquisar(TweetSeletor seletor) {
+
+		return super.createEntityQuery().innerJoinFetch("usuario").equal("id", seletor.getId())
+				.equal("usuario.id", seletor.getIdUsuario()).like("conteudo", seletor.getConteudo())
+				.equal("data", seletor.getData()).setFirstResult(seletor.getOffset()).setMaxResults(seletor.getLimite())
+				.list();
 	}
+	
+	public Long contar(TweetSeletor seletor) {
 
-	public Tweet consultar(int id) {
-		return super.em.find(Tweet.class, id);
-	}
-
-	public List<Tweet> listarTodos() {
-		return this.em.createQuery("SELECT t from Tweet t").getResultList();
-	}
-
-	public void atualizar(Tweet tweet) {
-		tweet.setData(Calendar.getInstance());
-		super.em.merge(tweet);
-	}
-
-	public void remover(int id) {
-		Tweet tweet = this.consultar(id);
-		super.em.remove(tweet);
+		return super.createCountQuery().innerJoinFetch("usuario").equal("id", seletor.getId())
+				.equal("usuario.id", seletor.getIdUsuario()).like("conteudo", seletor.getConteudo())
+				.equal("data", seletor.getData()).setFirstResult(seletor.getOffset()).setMaxResults(seletor.getLimite())
+				.count();
 	}
 }
