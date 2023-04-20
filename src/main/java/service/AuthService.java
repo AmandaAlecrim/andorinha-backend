@@ -22,7 +22,7 @@ public class AuthService {
 
 	@EJB
 	UsuarioRepository usuarioRepository;
-	
+
 	@Inject
 	JwtRepository jwtRepository;
 
@@ -32,16 +32,18 @@ public class AuthService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(AuthDTO authDTO) {
 		Usuario user = this.usuarioRepository.login(authDTO.getUsuario(), authDTO.getSenha());
-		if (user != null) {
-			
+		if ( user != null ) {
+
 			Calendar expiracao = Calendar.getInstance();
 			expiracao.add(Calendar.HOUR_OF_DAY, 3);
-			
+
 			String jwt = this.jwtRepository.generateToken(user, expiracao.getTime());
+
 			return Response.ok(user).header("x-token", jwt).build();
 		}
 		else {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
 	}
+
 }

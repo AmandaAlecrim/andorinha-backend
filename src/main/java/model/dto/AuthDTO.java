@@ -4,7 +4,7 @@ public class AuthDTO {
 
 	private String usuario;
 	private String senha;
-	
+
 	public String getUsuario() {
 		return usuario;
 	}
